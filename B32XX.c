@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+//QUESTION 1
 int is_prime(uint64_t p)
 {	uint64_t premier = 0;
 	uint64_t i=2;
@@ -13,15 +14,18 @@ int is_prime(uint64_t p)
 	return premier;
 }
 
-int main ()
-{	printf("%d\r\n", 13543);
-	printf("%d\r\n", is_prime(13543));
-	
-	printf("%d\r\n", 24857);
-	printf("%d\r\n", is_prime(24857));
+void print_prime_factors(uint64_t n)
+{	printf("%d:", n);
+	uint64_t i=2;
+	while (i<n)
+	{	if (n%i==0)
+		{	printf("%d ", i);
+		}
+		i++;
+	}
+}
 
-	printf("%d\r\n", 95873);
-	printf("%d\r\n", is_prime(95873));
-	
+int main ()
+{	print_prime_factors(15);
 	return 0;
 }
