@@ -16,11 +16,11 @@ int is_prime(uint64_t p)
 
 //QUESTION 2
 void print_prime_factors(uint64_t n)
-{	printf("%d:", n);
+{	printf("%ld:", n);
 	uint64_t i=2;
 	while (i<=n)
 	{	if (n%i==0)
-		{	printf(" %d", i);
+		{	printf(" %ld", i);
 			n=n/i;
 		} else
 		{	i++;
@@ -29,7 +29,21 @@ void print_prime_factors(uint64_t n)
 	printf("\r\n");
 }
 
+void read_file(const char * fileName)
+{	uint64_t number;
+	FILE * file = NULL;
+	file=fopen(fileName,"r");
+	if (file != NULL)
+	{	while (fscanf(file,"%ld",&number) != EOF)
+		{	print_prime_factors(number);
+		}
+	} else
+	{	printf("Impossible d'ouvrir le fichier.");
+	} 
+	fclose(file);
+}
+
 int main ()
-{	print_prime_factors(12488);
+{	read_file("in.txt");
 	return 0;
 }
