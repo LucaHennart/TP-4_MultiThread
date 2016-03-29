@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-Wall -pedantic
 LDFLAGS=
 HEADERS=
-SOURCES=generator.c 
+SOURCES=B32XX.c 
 OBJECTS=$(SOURCES:.c=.o)
 OUTPUT=../B3228
 
