@@ -1,10 +1,10 @@
 CC=gcc
 CFLAGS=-Wall -pedantic
-LDFLAGS=
+LDFLAGS=-pthread
 HEADERS=
 SOURCES=B32XX.c 
 OBJECTS=$(SOURCES:.c=.o)
-OUTPUT=../B3228
+OUTPUT=./B3228
 
 .PHONY: clean mrproper
 
