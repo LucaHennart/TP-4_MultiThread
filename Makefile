@@ -1,28 +1,53 @@
-CC=gcc
-CFLAGS=-Wall -pedantic
-LDFLAGS=-pthread
-HEADERS=
-SOURCES=B32XX.c 
-OBJECTS=$(SOURCES:.c=.o)
-OUTPUT=./B3228
+default: help
 
-.PHONY: clean mrproper
+help:
+	@echo Useful targets:
+	@echo "  small.txt medium.txt large.txt many.txt:  generate some input files "
+	@echo "  question1 question2: compile your programs"
+	@echo "  run1 run2:  run your programs through the 'time' utility"
+	@echo "  clean:  delete all generated files"
 
-all: $(OUTPUT)
+#########################
+# workload generation
 
-$(OUTPUT): $(OBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+tiny.txt:
+	./generator.cs 20 20 0 > $@
 
-%.o: %.clean
-	$(CC) $(CFLAGS) -o $@ -c $<
+small.txt:
+	./generator.cs 20 32 50 > $@
 
-Main.o: Editor.h
+medium.txt:
+	./generator.cs 20 50 50 > $@
+
+large.txt:
+	./generator.cs 20 64 50 > $@
+
+many.txt:
+	./generator.cs 1000 50 75 > $@
+
+#########################
+## program compilation
+
+question1: question1.c
+	gcc -Wall -pthread -o question1 question1.c 
+
+question2: question2.c
+	gcc -Wall -pthread -o question2 question2.c 
+
+# add your own rules when you create new programs
+
+#########################
+## program execution
+
+run1: question1
+	time ./question1
+
+run2: question2
+	time ./question2
+
+#########################
+## utilities
 
 clean:
-	rm -f $(OBJECTS)
+	rm -f question1 question2 tiny.txt small.txt medium.txt large.txt many.txt 
 
-mrproper: clean
-	rm -f $(OUTPUT)
-
-exec:
-	$(OUTPUT)
