@@ -3,8 +3,8 @@ default: help
 help:
 	@echo Useful targets:
 	@echo "  small.txt medium.txt large.txt many.txt:  generate some input files "
-	@echo "  question1 question2: compile your programs"
-	@echo "  run1 run2:  run your programs through the 'time' utility"
+	@echo "  question1 question2 question3 question5: compile your programs"
+	@echo "  run1 run2 run3 run5:  run your programs through the 'time' utility"
 	@echo "  clean:  delete all generated files"
 
 #########################
@@ -34,6 +34,12 @@ question1: question1.c
 question2: question2.c
 	gcc -Wall -pthread -o question2 question2.c 
 
+question3: question3.c
+	gcc -Wall -pthread -o question3 question3.c
+
+question5: question5.c
+	gcc -Wall -pthread -o question5 question5.c
+
 # add your own rules when you create new programs
 
 #########################
@@ -45,9 +51,15 @@ run1: question1
 run2: question2
 	time ./question2
 
+run3: question3
+	time ./question3
+
+run5: question5
+	time ./question5
+
 #########################
 ## utilities
 
 clean:
-	rm -f question1 question2 tiny.txt small.txt medium.txt large.txt many.txt 
+	rm -f question1 question2 question3 question5 tiny.txt small.txt medium.txt large.txt many.txt 
 
