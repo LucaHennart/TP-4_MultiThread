@@ -3,21 +3,41 @@
 #include <stdint.h>
 #include <pthread.h>
 
+const unsigned int MAX_FACTORS = 64;
 static pthread_mutex_t mtxCpt;
+static pthread_mutex_t mtxPrint;
 static FILE *file;
 
-void print_prime_factors(uint64_t n)
-{	printf("%ju:", n);
-	uint64_t i=2;
+int get_prime_factors(uint64_t n, uint64_t* dest)
+{	uint64_t i=2;
+	uint64_t cpt=0;
+
 	while (i<=n)
 	{	if (n%i==0)
-		{	printf(" %ju", i);
+		{	dest[cpt]=i;
+			cpt++;
 			n=n/i;
 		} else
 		{	i++;
 		}	
 	}
-	printf("\r\n");
+	return cpt;
+}
+
+void print_prime_factors(uint64_t n)
+{
+	uint64_t factors[MAX_FACTORS];
+	int j,k;
+	k=get_prime_factors(n,factors);
+
+	pthread_mutex_lock(&mtxPrint);
+	printf("%ju: ",n);
+	for(j=0; j<k; j++)
+	{
+	printf("%ju ",factors[j]);
+	}
+	printf("\n");
+	pthread_mutex_unlock(&mtxPrint);
 }
 
 void *routine()
@@ -36,7 +56,7 @@ void *routine()
 		{	print_prime_factors(atoll(str));
 		}
 	} while (end != NULL);
-	
+
 	free(str);
 	free(end);
 	
@@ -50,6 +70,7 @@ int main(void)
 	pthread_t threadID1;
 	pthread_t threadID2;
 	pthread_mutex_init(&mtxCpt,NULL);
+	pthread_mutex_init(&mtxPrint,NULL);
 
 	pthread_create(&threadID1,NULL,routine,NULL);
 	pthread_create(&threadID2,NULL,routine,NULL);	
@@ -58,5 +79,6 @@ int main(void)
 	
 	fclose(file);
 	pthread_mutex_destroy(&mtxCpt);
+	pthread_mutex_destroy(&mtxPrint);
 	pthread_exit(NULL);
 }

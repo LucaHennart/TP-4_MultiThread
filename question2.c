@@ -27,5 +27,6 @@ int main(void)
 	} else
 	{	printf("Impossible d'ouvrir le fichier.");
 	} 
+	free(str);
 	return 0;
 }

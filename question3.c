@@ -36,5 +36,7 @@ int main(void)
 	} else
 	{	printf("Impossible d'ouvrir le fichier.");
 	} 
+	free(str1);
+	free(str2);
 	pthread_exit(NULL);
 }
