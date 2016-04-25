@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <pthread.h>
+#include <math.h>
 
 typedef struct Decomposition Decomposition;
 
@@ -44,7 +45,6 @@ void AddDecomposition (Decomposition **tree, uint64_t value, unsigned int sizePr
 				if (test == NULL)	
 				{	
 					top -> right = elem;						// On place la décomposition nouvellement créée si on est en bas de l'arbre
-					//printf("%s:\r\n","On a Add");
 				}
 			} 
 			else												//  Si la valeur que l'on veut rentrer est inférieure ou égale à la valeur de la tête
@@ -53,14 +53,12 @@ void AddDecomposition (Decomposition **tree, uint64_t value, unsigned int sizePr
 				if (test == NULL)
 				{	
 					top -> left = elem;							// On place la décomposition nouvellment créée si on est en bas de l'arbre
-					//printf("%s:\r\n","On a Add");
 				}
 			}
 		} while (test != NULL);									// On fait cela tant que l'on arrive pas en bas
 	} else 
 	{	
 		*tree = elem;											// Sinon on le place directement
-		//printf("%s:\r\n","On a Add");
 	}
 }
 
@@ -190,6 +188,23 @@ uint64_t * tabPrime (uint64_t max)
 	return dP;
 }
 
+uint64_t* InitTabPrime (const char *fileName)
+{	char *str = malloc(sizeof(char)*25);
+	FILE *file=fopen(fileName,"r");
+	uint64_t max = 0;
+	if (file != NULL)
+	{	while (fgets(str,25,file) != NULL)
+		{	if((atoll(str)) > max)
+			{	max = atoll(str);
+			}
+		}
+	} else
+	{	printf("Impossible d'ouvrir le fichier.");
+	} 
+
+	return tabPrime(sqrt(max));
+}
+
 int isPrime (uint64_t n, uint64_t *tabPrime)
 {	int i;
 	for (i = 1 ; i < tabPrime[0] ; i++)
@@ -202,49 +217,60 @@ int isPrime (uint64_t n, uint64_t *tabPrime)
 	return 1;
 }
 
-unsigned int get_prime_factors(uint64_t n, uint64_t* dest)
-{	uint64_t *tab = tabPrime(sqrt(n));
+unsigned int get_prime_factors(uint64_t n, uint64_t* dest,uint64_t *tab)
+{	//uint64_t *tab = tabPrime(sqrt(n));
 	int isPrimeNumber = isPrime(n,tab);
 
 	uint64_t i=2;
 	unsigned int cpt=0;
- 	Decomposition *dec;
-
-	while (i<=n)
-	{	
-		pthread_mutex_lock(&mtxStruct);
-		dec = FindValue(decomposition,n);
-		pthread_mutex_unlock(&mtxStruct);
-		if (dec != NULL)
+	Decomposition *dec;
+	
+	if (isPrimeNumber == 1)
+	{
+		dest[0]=n;
+		return 1;
+	} else 
+	{
+		while (isPrime(n,tab) == 0 && i<=n)
 		{	
-			int j;
-			for (j = 0 ; j < dec -> sizePrimeNumbers ; j++)
+			pthread_mutex_lock(&mtxStruct);
+			dec = FindValue(decomposition,n);
+			pthread_mutex_unlock(&mtxStruct);
+			if (dec != NULL)
 			{	
-				dest[j+cpt]=dec->primeNumbers[j];
-			 	cpt++;
-			}
-		} else if (n%i==0)
-		{	
-			dest[cpt]=i;
+				int j;
+				for (j = 0 ; j < dec -> sizePrimeNumbers ; j++)
+				{	
+					dest[j+cpt]=dec->primeNumbers[j];
+				 	cpt++;
+				}
+			} else if (n%i==0)
+			{	
+				dest[cpt]=i;
+				cpt++;
+				n=n/i;
+			} else
+			{	
+				i++;
+			}	
+		}
+		if (n != 1)
+		{
+			dest[cpt]=n;
 			cpt++;
-			n=n/i;
-		} else
-		{	
-			i++;
-		}	
+		}
 	}
  	pthread_mutex_lock(&mtxStruct);
  	AddDecomposition(&decomposition,n,cpt,dest);
- 	//printf("%s:\r\n","On a Add");
   	pthread_mutex_unlock(&mtxStruct);
 	return cpt;
 }
 
-void print_prime_factors(uint64_t n)
+void print_prime_factors(uint64_t n,uint64_t *tab)
 {
 	uint64_t factors[MAX_FACTORS];
 	unsigned int j,k;
-	k=get_prime_factors(n,factors);
+	k=get_prime_factors(n,factors,tab);
 
 	pthread_mutex_lock(&mtxPrint);
 	printf("%ju: ",n);
@@ -259,6 +285,9 @@ void print_prime_factors(uint64_t n)
 void *routine()
 {	char *str = malloc(sizeof(char)*25);
 	char *end = malloc(sizeof(char)*25);
+	const char *fileName = "generated_different_numbers_question10.txt";		
+	uint64_t *tabPrime = InitTabPrime(fileName);	
+
 	do
 	{	
 		pthread_mutex_lock(&mtxCpt);
@@ -273,7 +302,7 @@ void *routine()
 
 		if (end != NULL)
 		{	
-			print_prime_factors(atoll(str));
+			print_prime_factors(atoll(str),tabPrime);
 		}
 	} while (end != NULL);
 

@@ -14,6 +14,7 @@ uint64_t * tabPrime (uint64_t max)
 	unsigned int pasI = 4;
 	unsigned int essai;
 	unsigned int j;
+
 	for (i = 7 ; i < max ; i += pasI, pasI = 6 - pasI)
 	{	
 		for (essai = dP[j = 1] ; (i % essai) && (essai * essai < i) ; essai = dP[++j]);
@@ -71,7 +72,7 @@ int main(void)
 	if (file != NULL)
 	{	while (fgets(str,25,file) != NULL)
 		{	print_prime_factors(atoll(str));
-		}
+		} 
 	} else
 	{	printf("Impossible d'ouvrir le fichier.");
 	} 

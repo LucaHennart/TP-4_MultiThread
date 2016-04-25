@@ -92,7 +92,7 @@ void *routine()
 }
 
 int main(void)
-{	const char *fileName = "generated_numbers_question2.txt";
+{	const char *fileName = "generated_numbers_question6_best_efficiency.txt";
 	file = fopen(fileName,"r");
 
 	pthread_t threadID1;
